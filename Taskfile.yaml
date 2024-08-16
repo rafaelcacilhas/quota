@@ -1,0 +1,41 @@
+# https://taskfile.dev
+
+version: '3'
+
+env:
+  COMPOSE_FILE: docker-compose.yml
+
+tasks:
+
+  build:
+    cmds:
+      - docker-compose build
+    silent: true
+
+  up:
+    cmds:
+      - docker-compose up
+    silent: true
+
+  start:
+    desc: Start the entire application in the terminal background connected to the LOCAL database
+    cmds:
+      - task: stop
+      - docker-compose --profile local up -d
+      - cmd: echo "Started! If you would like to see the logging output, consider using 'task up' instead, or run 'task log:backend' or 'task log:frontend' in another shell."
+        silent: True
+
+  stop:
+    desc: Stop all containers, regardless of environment
+    cmds:
+      - docker-compose down
+
+  "log:backend":
+    desc: View logs for the backend
+    summary: |
+      View the current logging produced by the backend server actively running in another process
+      (either in a different shell or in a background process).
+
+      Logging will continue to update as new log entries are generated, so long as the process is running.
+    cmds:
+      - docker-compose logs backend --follow
